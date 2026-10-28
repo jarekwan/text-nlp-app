@@ -1,0 +1,12 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+fastapi
+uvicorn[standard]
+python-multipart
+google-cloud-storage
+qdrant-client[fastembed]
+transformers
+torch==2.7.0+cpu
+jinja2
+google-genai
+keybert
+scikit-learn
