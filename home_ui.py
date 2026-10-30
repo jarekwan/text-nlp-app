@@ -109,6 +109,18 @@ placeholder="Zadaj pytanie dotyczące dodanych dokumentów" required>
 </div>
 
 <div class="section">
+<h2>Podobieństwo tekstów</h2>
+<p>Wybierz kilka zaindeksowanych dokumentów i porównaj ich podobieństwo znaczeniowe.</p>
+<p><a href="/similarity">Porównaj dokumenty</a></p>
+</div>
+
+<div class="section">
+<h2>Grupowanie tekstów</h2>
+<p>KMeans przypisuje dokumenty do grup, a PCA pokazuje ich układ na wykresie 2D.</p>
+<p><a href="/clustering">Grupuj dokumenty</a></p>
+</div>
+
+<div class="section">
 <h2>Demonstracja BERT-a</h2>
 <p>Ta funkcja uzupełnia zamaskowany token na podstawie wzorców poznanych podczas wcześniejszego treningu. Nie korzysta z dodanych dokumentów, Qdrant ani internetu.</p>
 <p>Model: <code>dkleczek/bert-base-polish-cased-v1</code>. Według karty był trenowany na polskich tekstach z OpenSubtitles, ParaCrawl, Polskiego Korpusu Parlamentarnego i Wikipedii.</p>

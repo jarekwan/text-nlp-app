@@ -3,6 +3,8 @@ from fastapi.responses import HTMLResponse
 
 import fill_mask_ui
 import home_ui
+import similarity_ui
+import clustering_ui
 from bert_service import MASK_TOKEN, get_fill_mask_pipeline
 from gcs_repository import save_document
 from keywords_service import get_document_keywords
@@ -14,6 +16,9 @@ from semantic_search import (
     list_indexed_documents,
     split_into_chunks,
 )
+
+from similarity_service import compare_documents
+from clustering_service import cluster_documents
 
 
 app = FastAPI(title="Aplikacja do analizy i wyszukiwania tekstów")
@@ -158,6 +163,81 @@ def keywords(gcs_path: str = Form(...)):
         filename,
         gcs_path,
         ranked_keywords,
+    )
+
+
+@app.get("/similarity", response_class=HTMLResponse)
+def show_similarity_form():
+    """Pokazuje formularz wyboru dokumentów do porównania."""
+    try:
+        documents = list_indexed_documents()
+    except Exception as error:
+        return home_ui.error_page(
+            "Nie udało się pobrać listy dokumentów",
+            str(error),
+            500,
+        )
+
+    return similarity_ui.similarity_form_page(documents)
+
+
+@app.post("/similarity", response_class=HTMLResponse)
+def compare_selected_documents(gcs_paths: list[str] = Form(...)):
+    """Porównuje wybrane dokumenty i pokazuje macierz wyników."""
+    try:
+        result = compare_documents(gcs_paths)
+    except Exception as error:
+        try:
+            documents = list_indexed_documents()
+        except Exception:
+            documents = []
+
+        return similarity_ui.similarity_form_page(
+            documents,
+            selected_paths=gcs_paths,
+            error=str(error),
+        )
+
+    return similarity_ui.similarity_results_page(
+        result["document_names"],
+        result["similarity_matrix"],
+    )
+
+
+@app.get("/clustering", response_class=HTMLResponse)
+def show_clustering_form():
+    """Pokazuje formularz wyboru liczby grup."""
+    try:
+        documents = list_indexed_documents()
+    except Exception as error:
+        return home_ui.error_page(
+            "Nie udało się pobrać listy dokumentów",
+            str(error),
+            500,
+        )
+
+    return clustering_ui.clustering_form_page(len(documents))
+
+
+@app.post("/clustering", response_class=HTMLResponse)
+def run_clustering(n_clusters: int = Form(...)):
+    """Uruchamia KMeans i PCA dla zaindeksowanych dokumentów."""
+    try:
+        result = cluster_documents(n_clusters)
+    except Exception as error:
+        try:
+            documents = list_indexed_documents()
+        except Exception:
+            documents = []
+
+        return clustering_ui.clustering_form_page(
+            len(documents),
+            error=str(error),
+        )
+
+    return clustering_ui.clustering_results_page(
+        result["points"],
+        result["cluster_count"],
     )
 
 

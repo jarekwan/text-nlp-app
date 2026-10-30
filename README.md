@@ -45,3 +45,33 @@ Install dependencies with `python -m pip install -r requirements.txt`. Configure
 [Open the deployed application](https://text-nlp-app-983807437277.europe-west4.run.app)
 
 The demo may be temporarily unavailable during updates.
+
+## Document similarity
+
+Users can select two or more indexed documents and compare their semantic similarity. The app retrieves each document's passages from Qdrant, creates an embedding for each passage with the same FastEmbed model, and averages the passage embeddings into one normalized document vector. It then calculates cosine similarity for every pair and displays the results as a matrix.
+
+The matrix is symmetric. A value of `1.0` on the diagonal represents a document compared with itself. Other values are similarity scores, not probabilities.
+
+## Document clustering and visualization
+
+Users can choose how many groups to create from the indexed documents. The app builds one normalized vector per document by averaging its passage embeddings, then applies scikit-learn KMeans to assign documents to groups. PCA reduces the document vectors to two dimensions for a 2D plot. The results page shows the plot and each document's assigned group.
+
+The PCA plot is an exploratory visualization. It helps inspect how documents relate to one another; it does not prove that the clusters are objectively correct. At least three indexed documents are required.
+
+## Relevant modules
+
+- `app.py` — FastAPI routes for document upload, search, RAG, keywords, BERT, similarity, and clustering.
+- `home_ui.py` — main page and links to the app's features.
+- `semantic_search.py` — text chunking, FastEmbed embeddings, Qdrant indexing and search.
+- `similarity_service.py` and `similarity_ui.py` — document similarity calculation and result pages.
+- `clustering_service.py` and `clustering_ui.py` — KMeans clustering, PCA coordinates, and result pages.
+- `keywords_service.py` — KeyBERT keyword extraction.
+- `rag_service.py` — answer generation using retrieved passages.
+- `bert_service.py` and `fill_mask_ui.py` — BERT fill-mask demonstration.
+
+## Using the analysis features
+
+1. Add and index at least two `.txt` documents on the main page.
+2. Open **Compare documents** to view their pairwise similarity matrix.
+3. Add at least three indexed documents, then open **Cluster documents** to choose the number of groups and view the KMeans/PCA results.
+4. Use semantic search, RAG, KeyBERT, and BERT fill-mask from their sections in the application.
